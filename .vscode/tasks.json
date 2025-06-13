@@ -1,0 +1,44 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run GitHub Enterprise MCP Server",
+      "type": "shell",
+      "command": "uv",
+      "args": ["--directory", "${workspaceFolder}", "run", "github-enterprise-mcp"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Debug with MCP Inspector",
+      "type": "shell",
+      "command": "npx",
+      "args": ["@modelcontextprotocol/inspector", "uv", "--directory", "${workspaceFolder}", "run", "github-enterprise-mcp"],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Update Dependencies",
+      "type": "shell",
+      "command": "uv",
+      "args": ["sync", "--dev", "--all-extras"],
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

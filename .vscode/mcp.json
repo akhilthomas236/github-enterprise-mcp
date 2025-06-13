@@ -1,0 +1,9 @@
+{
+  "servers": {
+    "github-enterprise-mcp": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["--directory", "/Users/annmariyajoshy/vibecoding/github-enterprise-mcp", "run", "github-enterprise-mcp"]
+    }
+  }
+}
