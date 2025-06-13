@@ -88,12 +88,13 @@ To use this MCP server with your GitHub Enterprise instance, you'll need:
    - A friendly name to identify your connection within the MCP server
    - This will be used in subsequent commands
 
-4. **Environment Variable Configuration** (Optional):
-   - You can set up automatic connection using environment variables:
-     * `GITHUB_CONNECTION_NAME`: The name for your connection
-     * `GITHUB_URL`: Your GitHub Enterprise URL
-     * `GITHUB_TOKEN`: Your Personal Access Token
-   - When these variables are set, the server will automatically establish a connection on startup
+4. **Automatic Connection via Environment Variables** (New in v0.2.0):
+   - The server can automatically establish a connection on startup using environment variables
+   - Configure the following environment variables:
+     - `GITHUB_CONNECTION_NAME`: Name for your connection (e.g., "github-public")
+     - `GITHUB_URL`: GitHub URL (e.g., "github.com" or your enterprise URL)
+     - `GITHUB_TOKEN`: Your personal access token
+   - When using MCP Inspector or VS Code tasks, you can configure these in the task settings
 
 ### Claude or Other LLM Integration
 
@@ -179,11 +180,12 @@ On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
 
 #### VS Code Integration
 
-To use this MCP server with VS Code, add the following to your workspace's `.vscode/mcp.json` file:
+To use this MCP server with VS Code, add the following configurations:
 
 <details>
-  <summary>Basic MCP Configuration (Click to expand)</summary>
+  <summary>Basic MCP Configuration for VS Code (Click to expand)</summary>
   
+  File: `.vscode/mcp.json`
   ```json
   {
     "servers": {
@@ -200,6 +202,7 @@ To use this MCP server with VS Code, add the following to your workspace's `.vsc
 <details>
   <summary>MCP Configuration with Environment Variables (Click to expand)</summary>
   
+  File: `.vscode/mcp.json`
   ```json
   {
     "servers": {
@@ -220,6 +223,60 @@ To use this MCP server with VS Code, add the following to your workspace's `.vsc
   - `GITHUB_CONNECTION_NAME`: A name for your GitHub connection
   - `GITHUB_URL`: Your GitHub URL (e.g., github.com or your enterprise URL)
   - `GITHUB_TOKEN`: Your personal access token
+</details>
+
+<details>
+  <summary>VS Code Tasks Configuration (Click to expand)</summary>
+  
+  File: `.vscode/tasks.json`
+  ```json
+  {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Run GitHub Enterprise MCP Server",
+        "type": "shell",
+        "command": "uv",
+        "args": ["--directory", "${workspaceFolder}", "run", "github-enterprise-mcp"],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "presentation": {
+          "reveal": "always",
+          "panel": "dedicated"
+        },
+        "problemMatcher": [],
+        "options": {
+          "env": {
+            "GITHUB_CONNECTION_NAME": "github-public",
+            "GITHUB_URL": "github.com",
+            "GITHUB_TOKEN": "YOUR_GITHUB_TOKEN_HERE"
+          }
+        }
+      },
+      {
+        "label": "Debug with MCP Inspector",
+        "type": "shell",
+        "command": "npx",
+        "args": ["@modelcontextprotocol/inspector", "uv", "--directory", "${workspaceFolder}", "run", "github-enterprise-mcp"],
+        "group": "build",
+        "options": {
+          "env": {
+            "GITHUB_CONNECTION_NAME": "github-public",
+            "GITHUB_URL": "github.com",
+            "GITHUB_TOKEN": "YOUR_GITHUB_TOKEN_HERE"
+          }
+        },
+        "presentation": {
+          "reveal": "always",
+          "panel": "dedicated"
+        },
+        "problemMatcher": []
+      }
+    ]
+  }
+  ```
 </details>
 
 ## Development
