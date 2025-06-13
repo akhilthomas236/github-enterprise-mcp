@@ -88,6 +88,13 @@ To use this MCP server with your GitHub Enterprise instance, you'll need:
    - A friendly name to identify your connection within the MCP server
    - This will be used in subsequent commands
 
+4. **Environment Variable Configuration** (Optional):
+   - You can set up automatic connection using environment variables:
+     * `GITHUB_CONNECTION_NAME`: The name for your connection
+     * `GITHUB_URL`: Your GitHub Enterprise URL
+     * `GITHUB_TOKEN`: Your Personal Access Token
+   - When these variables are set, the server will automatically establish a connection on startup
+
 ### Claude or Other LLM Integration
 
 To use this MCP server with AI assistants like Claude:
@@ -137,7 +144,7 @@ On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
 
 <details>
   <summary>Published Servers Configuration</summary>
-  ```
+  ```json
   "mcpServers": {
     "github-enterprise-mcp": {
       "command": "uvx",
@@ -147,6 +154,72 @@ On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
     }
   }
   ```
+</details>
+
+<details>
+  <summary>Environment Variables Configuration</summary>
+  ```json
+  "mcpServers": {
+    "github-enterprise-mcp": {
+      "command": "uvx",
+      "args": [
+        "github-enterprise-mcp"
+      ],
+      "env": {
+        "GITHUB_CONNECTION_NAME": "my-github",
+        "GITHUB_URL": "github.com",
+        "GITHUB_TOKEN": "YOUR_GITHUB_TOKEN_HERE"
+      }
+    }
+  }
+  ```
+  Using environment variables allows the server to automatically establish a connection on startup,
+  eliminating the need to manually run the connect-github-enterprise tool.
+</details>
+
+#### VS Code Integration
+
+To use this MCP server with VS Code, add the following to your workspace's `.vscode/mcp.json` file:
+
+<details>
+  <summary>Basic MCP Configuration (Click to expand)</summary>
+  
+  ```json
+  {
+    "servers": {
+      "github-enterprise-mcp": {
+        "type": "stdio",
+        "command": "uvx",
+        "args": ["github-enterprise-mcp"]
+      }
+    }
+  }
+  ```
+</details>
+
+<details>
+  <summary>MCP Configuration with Environment Variables (Click to expand)</summary>
+  
+  ```json
+  {
+    "servers": {
+      "github-enterprise-mcp": {
+        "command": "uvx",
+        "args": ["github-enterprise-mcp"],
+        "env": {
+          "GITHUB_CONNECTION_NAME": "my-github",
+          "GITHUB_URL": "github.com",
+          "GITHUB_TOKEN": "your-personal-access-token"
+        }
+      }
+    }
+  }
+  ```
+  
+  When using environment variables:
+  - `GITHUB_CONNECTION_NAME`: A name for your GitHub connection
+  - `GITHUB_URL`: Your GitHub URL (e.g., github.com or your enterprise URL)
+  - `GITHUB_TOKEN`: Your personal access token
 </details>
 
 ## Development

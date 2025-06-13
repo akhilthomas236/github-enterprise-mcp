@@ -984,9 +984,88 @@ Based on these changes, please create a well-structured pull request description
     else:
         raise ValueError(f"Unknown prompt: {name}")
 
+async def setup_auto_connection():
+    """Setup automatic connection from environment variables if available"""
+    global connections, current_connection
+    
+    env_name = os.environ.get("GITHUB_CONNECTION_NAME")
+    env_url = os.environ.get("GITHUB_URL")
+    env_token = os.environ.get("GITHUB_TOKEN")
+    
+    print(f"Checking for environment variables for auto-connection...")
+    if not env_name:
+        print("- GITHUB_CONNECTION_NAME not found in environment")
+    if not env_url:
+        print("- GITHUB_URL not found in environment")
+    if not env_token:
+        print("- GITHUB_TOKEN not found in environment (value hidden for security)")
+        
+    if env_name and env_url and env_token:
+        print(f"Found all required environment variables. Attempting to connect as '{env_name}'...")
+        try:
+            # Create the connection with URL validation
+            connection = GitHubConnection(
+                name=env_name,
+                url=env_url,
+                auth_method=AuthMethod.TOKEN,
+                token=env_token
+            )
+            
+            print(f"Connection object created with URL: {connection.url}")
+            
+            # Test the connection with the validated URL
+            github_client = connection.get_github_client()
+            user = github_client.get_user()
+            
+            # Store the connection
+            connections[env_name] = connection
+            current_connection = env_name
+            
+            print(f"✅ Auto-connected to GitHub as {user.login} with name '{env_name}'")
+            
+            # Verify that repositories can be accessed
+            repos = list(github_client.get_user().get_repos()[:5])
+            if repos:
+                print(f"✅ Successfully accessed {len(repos)} repositories")
+                for repo in repos[:3]:  # Show max 3 repos
+                    print(f"  - {repo.name}")
+            else:
+                print("⚠️ No repositories found. Token may have limited permissions.")
+                
+            return True
+        except GithubException as e:
+            print(f"❌ Failed to auto-connect to GitHub: {str(e)}")
+            if "401" in str(e) or "authentication failed" in str(e).lower():
+                print("   This appears to be an authentication error. Please check if:")
+                print("   - Your token is valid and not expired")
+                print("   - Your token has sufficient permissions (repo, read:org, user)")
+                print("   - Your account has 2FA enabled (if so, you'll need to use the 2FA connection method)")
+        except Exception as e:
+            print(f"❌ Failed to auto-connect: {str(e)}")
+    else:
+        print("❌ Missing required environment variables for auto-connection")
+    
+    return False
+
 async def main():
+    print("Starting GitHub Enterprise MCP server...")
+    
     # Run the server using stdin/stdout streams
     async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
+        print("MCP server stdio streams initialized")
+        
+        # Try to setup auto connection from environment variables
+        print("Attempting automatic GitHub connection from environment variables...")
+        auto_connected = await setup_auto_connection()
+        
+        if auto_connected:
+            print("Auto-connection successful, resources will be available immediately")
+            # Ensure resources list gets refreshed when client connects
+            server.request_context = await server._init_request_context()
+        else:
+            print("No auto-connection established. Use connect-github-enterprise tool to connect manually.")
+            
+        print("Starting MCP server run loop...")
         await server.run(
             read_stream,
             write_stream,

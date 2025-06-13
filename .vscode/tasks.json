@@ -14,7 +14,14 @@
         "reveal": "always",
         "panel": "dedicated"
       },
-      "problemMatcher": []
+      "problemMatcher": [],
+      "options": {
+        "env": {
+          "GITHUB_CONNECTION_NAME": "github-public1",
+          "GITHUB_URL": "github.com",
+          "GITHUB_TOKEN": "YOUR_GITHUB_TOKEN_HERE"
+        }
+      }
     },
     {
       "label": "Debug with MCP Inspector",
@@ -22,6 +29,13 @@
       "command": "npx",
       "args": ["@modelcontextprotocol/inspector", "uv", "--directory", "${workspaceFolder}", "run", "github-enterprise-mcp"],
       "group": "build",
+      "options": {
+        "env": {
+          "GITHUB_CONNECTION_NAME": "github-public1",
+          "GITHUB_URL": "github.com",
+          "GITHUB_TOKEN": "YOUR_GITHUB_TOKEN_HERE"
+        }
+      },
       "presentation": {
         "reveal": "always",
         "panel": "dedicated"
